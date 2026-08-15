@@ -25,6 +25,7 @@ place to look.
 import json
 import re
 import sys
+import time
 from datetime import datetime
 
 import requests
@@ -57,29 +58,38 @@ BROWSER_HEADERS = {
 }
 
 
-def fetch(url):
+def fetch(url, max_attempts=3):
     client = _SCRAPER if _SCRAPER is not None else requests
-    resp = client.get(url, headers=BROWSER_HEADERS, timeout=20)
+    last_status = None
 
-    if resp.status_code == 403:
-        hint = (
-            "still 403 even with cloudscraper — this site's bot-protection is "
-            "tougher than the usual Cloudflare challenge cloudscraper handles. "
-            "Next step would be a real headless browser (e.g. Playwright) "
-            "instead of a plain HTTP client."
-            if _SCRAPER is not None else
-            "403 Forbidden, and 'cloudscraper' isn't installed — install it "
-            "with `pip install cloudscraper` and try again. Sites behind "
-            "Cloudflare-style bot protection often block plain 'requests' "
-            "calls even with a convincing User-Agent, because they fingerprint "
-            "more than just headers."
-        )
-        raise RuntimeError(f"{url} returned 403 Forbidden. {hint}")
+    for attempt in range(1, max_attempts + 1):
+        resp = client.get(url, headers=BROWSER_HEADERS, timeout=20)
+        last_status = resp.status_code
 
-    resp.raise_for_status()
-    if resp.status_code in (401,) or "sign_in" in resp.url:
-        raise RuntimeError(f"{url} appears to require sign-in — is the profile public?")
-    return resp.text
+        if resp.status_code == 403:
+            if attempt < max_attempts:
+                wait = 20 * attempt
+                print(f"  ({url} got 403, retrying in {wait}s — attempt {attempt}/{max_attempts})")
+                time.sleep(wait)
+                continue
+            hint = (
+                "still 403 after retries — this site's bot-protection is "
+                "tougher than the usual Cloudflare challenge cloudscraper "
+                "handles, or your IP has been temporarily flagged from "
+                "repeated requests. Wait 15-20 minutes with no requests at "
+                "all, then try once. If it still fails after a real cool-down "
+                "period, the next step would be a real headless browser "
+                "(e.g. Playwright) instead of a plain HTTP client."
+                if _SCRAPER is not None else
+                "403 Forbidden, and 'cloudscraper' isn't installed — install "
+                "it with `python3 -m pip install cloudscraper` and try again."
+            )
+            raise RuntimeError(f"{url} returned 403 Forbidden. {hint}")
+
+        resp.raise_for_status()
+        if resp.status_code in (401,) or "sign_in" in resp.url:
+            raise RuntimeError(f"{url} appears to require sign-in — is the profile public?")
+        return resp.text
 
 
 def text_of(soup):
@@ -189,6 +199,7 @@ def parse_profile_page(html):
 
 def scrape(username):
     stats_html = fetch(f"https://app.thestorygraph.com/stats/{username}")
+    time.sleep(3)  # small gap between requests rather than hitting back-to-back
     profile_html = fetch(f"https://app.thestorygraph.com/profile/{username}")
 
     # Debug dumps — always written so we can see exactly what the scraper
