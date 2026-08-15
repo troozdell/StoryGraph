@@ -2,8 +2,10 @@ name: Update StoryGraph stats
 
 on:
   schedule:
+    # Runs every 6 hours. Adjust as you like — StoryGraph stats don't
+    # change fast enough to need anything more frequent.
     - cron: "0 */6 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch: {}  # lets you trigger it manually from the Actions tab
 
 jobs:
   scrape:
@@ -16,10 +18,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 cloudscraper
+        run: pip install requests beautifulsoup4
 
       - name: Scrape StoryGraph
-        run: python3 scrape_storygraph.py hopebales stats.json
+        # Replace YOUR_STORYGRAPH_USERNAME with hers.
+        run: python3 scrape_storygraph.py YOUR_STORYGRAPH_USERNAME stats.json
 
       - name: Commit updated stats.json
         run: |
