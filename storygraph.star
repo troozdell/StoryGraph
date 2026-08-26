@@ -1,149 +1,105 @@
 """
 Applet: StoryGraph Stats
 Summary: Flips through reading stats
-Description: Fetches a small JSON stats file (generated from a StoryGraph
-    library CSV export) and cycles through frames showing books read this
-    year, average rating, top mood, currently reading, and more.
+Description: Renders directly from values passed in at render time (see
+    update_and_push.sh) — no network fetch inside this app itself. Cycles
+    through screens showing books/pages this year and all-time pages.
+    Styled to roughly match StoryGraph's own teal-on-dark-blue look.
 Author: you
 """
 
 load("render.star", "render")
-load("http.star", "http")
-load("cache.star", "cache")
-load("schema.star", "schema")
-load("encoding/json.star", "json")
+load("encoding/base64.star", "base64")
 
-# Set this to your hosted stats.json URL, e.g. a GitHub Gist "raw" link
-# WITHOUT a commit hash in it, so it always serves the latest revision:
-#   https://gist.githubusercontent.com/<user>/<gist_id>/raw/stats.json
-DEFAULT_JSON_URL = "https://gist.githubusercontent.com/YOUR_USERNAME/YOUR_GIST_ID/raw/stats.json"
+# Approximate StoryGraph brand palette (their site uses a teal-green accent
+# on a dark blue-grey background — this isn't pulled from an official brand
+# kit, just matched by eye, so nudge these if you want it closer).
+TEAL = "#3AAF9A"
+BG_DARK = "#000000"
+CREAM = "#F2F2F0"
+MUTED = "#7FA79D"
 
-CACHE_TTL_SECONDS = 60 * 30  # refetch at most every 30 minutes
+# Small original "ascending bars" mark in the brand teal — evokes the
+# "Graph" half of StoryGraph without reproducing their actual trademarked
+# logo artwork.
+GRAPH_ICON = base64.decode("iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAACgUlEQVR4nK1TTWsaQRjenVk3q6tltbKV9lpKUgrSi0YCQmiCrn8geEhJT/kRhV7yCyq9hUJ/gD1Igh60soEs9FCPJU1JUtqD9sPgWjfWrPNR3o1rcouhfeDdmXdm5+F5n3dGEP4TREmShJWVlXg4HFZgodVqfT87O2PZbPYu55xTSlmtVusQQoRkMhkyDOOxZVkfTdO0EUICY+yCKZFIoPF4/IdPsLW19WRjY+M+v4J0Oh02TfOln+/s7LyAsxjjqSIEH9u2v1FKXQgAIYTC/Pz8/DeM/X7f9Q8QQkapVGotEomIlFJBFMVLIoxxAGMsQ4gT+DnGWB4MBrRcLr/mnDPGGNF1/WEmk4l5BAhdEl0HRVFQvV7/JIoiggDCQqGQ9Uy+qug6qKqKDw8P3ZOTk71AIBACstXV1WfgEZQ3M5EkSd5/9Xp9G9SAT/Pz88bCwoLCOffKm4nIR61WewdqoAEIISmXyz2C9ZmJGGMcxv39/R+9Xu+LLMthyA3DWJvs34zo9PSUW5b1xjd8cXHxqa7raGYiH9CharX6Fuau6zqqqupLS0sJyD0iSukYDITwb6+fE0JGPhEY22g0PgMJqIK1YrHolQf3QojH4w8kSVIggsFgcG5uLgBzRVE0GDHG3mWBdh8dHY2Pj4/3wCfbtr92u92Op1aWZWFzczOpadotWNjd3f3Q6/XG6+vrmYkyUiqV3g+Hw2mJy8vL0Wg0Gmw2mx3btjmIEWOxmFipVF5pmgavnamqehshhB3H6foHNU27B88IiOH5OI7zy3XdYSQSuXNwcNDM5/PPpdFoxMvl8nYoFApO7AEvOMZ42gh4xFM5F/fG24P/2u32z6t7/4y/1SNta1ME7ZIAAAAASUVORK5CYII=")
 
-PINK = "#e05a8f"
-CREAM = "#fdf3e7"
-DARK = "#241d2c"
+
+def format_thousands(n):
+    """Starlark's str.format doesn't support the ',' spec like Python does,
+    so commas get inserted by hand. Starlark also has no while loop, so this
+    uses a bounded for loop instead (10 iterations is far more than any
+    realistic page/book count needs)."""
+    negative = n < 0
+    s = str(int(abs(n)))
+    groups = []
+    for _ in range(10):
+        if len(s) <= 3:
+            groups.insert(0, s)
+            break
+        groups.insert(0, s[-3:])
+        s = s[:-3]
+    result = ",".join(groups)
+    return "-" + result if negative else result
 
 
-def fetch_stats(url):
-    cached = cache.get("storygraph_stats")
-    if cached != None:
-        return json.decode(cached)
-
-    res = http.get(url)
-    if res.status_code != 200:
+def get_int(config, key):
+    """Reads an integer straight out of the render-time config (passed in
+    as key=value args by update_and_push.sh) — no fetch, no cache."""
+    val = config.get(key)
+    if val == None:
         return None
-
-    body = res.body()
-    cache.set("storygraph_stats", body, ttl_seconds = CACHE_TTL_SECONDS)
-    return json.decode(body)
+    return int(val)
 
 
-def stat_frame(big_text, label, sub = ""):
-    children = [
-        render.Box(height = 2, width = 1),
-        render.Text(content = big_text, font = "6x13", color = PINK),
-        render.Text(content = label, font = "tom-thumb", color = CREAM),
-    ]
-    if sub:
-        children.append(render.Text(content = sub, font = "tom-thumb", color = "#a9a9a9"))
+def screen(category, timeframe, value):
+    """One screen: small teal graph icon on the left, and centered text in
+    the remaining space — category label, timeframe, then the number —
+    e.g. 'Pages' / 'This Year' / '12,285'."""
     return render.Box(
         width = 64,
         height = 32,
-        color = DARK,
-        child = render.Column(
-            main_align = "center",
-            cross_align = "center",
+        color = BG_DARK,
+        child = render.Row(
             expanded = True,
-            children = children,
-        ),
-    )
-
-
-def title_frame(title_text, label):
-    return render.Box(
-        width = 64,
-        height = 32,
-        color = DARK,
-        child = render.Column(
-            main_align = "center",
+            main_align = "start",
             cross_align = "center",
-            expanded = True,
             children = [
-                render.Text(content = label, font = "tom-thumb", color = PINK),
-                render.Box(height = 1, width = 1),
-                render.Marquee(
-                    width = 60,
-                    child = render.Text(content = title_text, font = "tom-thumb", color = CREAM),
+                render.Padding(
+                    pad = (4, 0, 2, 0),
+                    child = render.Image(src = GRAPH_ICON, width = 18, height = 18),
+                ),
+                render.Box(
+                    width = 39,  # 64 - icon(18) - padding(4+3)
+                    child = render.Column(
+                        main_align = "center",
+                        cross_align = "center",
+                        children = [
+                            render.Text(content = category, color = TEAL, font = "tb-8"),
+                            render.Text(content = timeframe, color = MUTED, font = "tb-8"),
+                            render.Text(content = str(value), color = CREAM, font = "tb-8"),
+                        ],
+                    ),
                 ),
             ],
         ),
     )
 
 
-def build_frames(stats):
+def build_frames(config):
     frames = []
 
-    frames.append(stat_frame(
-        str(stats.get("books_this_year", 0)),
-        "books read in %s" % str(stats.get("year", "")),
-    ))
-
-    pages_this_year = stats.get("pages_this_year")
+    pages_this_year = get_int(config, "pages_this_year")
     if pages_this_year != None:
-        frames.append(stat_frame(
-            "{:,}".format(pages_this_year),
-            "pages read in %s" % str(stats.get("year", "")),
-        ))
+        frames.append(screen("Pages", "this year", format_thousands(pages_this_year)))
 
-    total_pages = stats.get("total_pages_all_time")
+    books_this_year = get_int(config, "books_this_year")
+    if books_this_year != None:
+        frames.append(screen("Books", "this year", books_this_year))
+
+    total_pages = get_int(config, "total_pages_all_time")
     if total_pages != None:
-        frames.append(stat_frame(
-            "{:,}".format(total_pages),
-            "pages read all-time",
-        ))
-
-    avg = stats.get("average_rating")
-    if avg != None:
-        frames.append(stat_frame(str(avg) + " \u2605", "average rating"))
-
-    if stats.get("five_star_count") != None:
-        frames.append(stat_frame(
-            str(stats["five_star_count"]),
-            "five-star reads",
-        ))
-
-    if stats.get("current_streak_days") != None:
-        frames.append(stat_frame(
-            str(stats["current_streak_days"]),
-            "day reading streak",
-            "best: %s days" % str(stats.get("longest_streak_days", "?")),
-        ))
-
-    if stats.get("average_time_to_finish"):
-        frames.append(stat_frame(
-            stats["average_time_to_finish"],
-            "avg. time to finish",
-        ))
-
-    if stats.get("to_read_count") != None:
-        frames.append(stat_frame(
-            str(stats["to_read_count"]),
-            "books on the TBR",
-        ))
-
-    if stats.get("dnf_count") != None:
-        frames.append(stat_frame(
-            str(stats["dnf_count"]),
-            "did-not-finish",
-        ))
-
-    reading_titles = stats.get("currently_reading_titles") or []
-    if reading_titles:
-        frames.append(title_frame(reading_titles[0], "currently reading"))
-
-    if stats.get("reading_personality"):
-        frames.append(title_frame(stats["reading_personality"], "reading style"))
+        frames.append(screen("Pages", "all-time", format_thousands(total_pages)))
 
     return frames
 
@@ -153,7 +109,7 @@ def error_frame(message):
         child = render.Box(
             width = 64,
             height = 32,
-            color = DARK,
+            color = BG_DARK,
             child = render.WrappedText(
                 content = message,
                 font = "tom-thumb",
@@ -165,31 +121,11 @@ def error_frame(message):
 
 
 def main(config):
-    url = config.get("json_url", DEFAULT_JSON_URL)
-    stats = fetch_stats(url)
-
-    if not stats:
-        return error_frame("Couldn't load StoryGraph stats")
-
-    frames = build_frames(stats)
+    frames = build_frames(config)
     if not frames:
         return error_frame("No stats to show yet")
 
     return render.Root(
         delay = 4000,
         child = render.Animation(children = frames),
-    )
-
-
-def get_schema():
-    return schema.Schema(
-        version = "1",
-        fields = [
-            schema.Text(
-                id = "json_url",
-                name = "Stats JSON URL",
-                desc = "Raw URL to the stats.json file (e.g. a GitHub Gist raw link)",
-                icon = "link",
-            ),
-        ],
     )
