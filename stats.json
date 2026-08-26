@@ -1,10 +1,10 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-08-24T14:53:59",
+  "generated_at": "2026-08-26T04:13:10",
   "year": 2026,
-  "pages_this_year": 13108,
-  "total_books_all_time": 277,
-  "total_pages_all_time": 110529,
+  "pages_this_year": 13859,
+  "total_books_all_time": 278,
+  "total_pages_all_time": 111280,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
@@ -15,21 +15,20 @@
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 33
+    "2026": 34
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 13108
+    "2026": 13859
   },
-  "books_this_year": 33,
+  "books_this_year": 34,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": 3,
+  "currently_reading_count": 2,
   "currently_reading_titles": [
     "The Mad Wife",
-    "A Court of Silver Flames",
     "Living Dead in Dallas"
   ],
   "to_read_count": 40,
