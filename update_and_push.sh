@@ -6,32 +6,38 @@
 # GitHub's raw-content CDN having caught up, and no in-app cache to wait
 # out. Mirrors how SpotifyStats does it (see ../SpotifyStats/update_stats.py).
 #
-# Meant to be triggered on a schedule by launchd (see
-# com.eric.storygraph-update.plist), since this needs to run from a normal
-# residential IP rather than a cloud/datacenter one to get past StoryGraph's
-# bot protection.
+# Triggered on a schedule by cron (see `crontab -l`), since this needs to
+# run from a normal residential IP rather than a cloud/datacenter one to
+# get past StoryGraph's bot protection. Every external command below uses
+# a full path rather than relying on $PATH, since cron's environment is
+# even more minimal than an interactive shell's (this bit us once already
+# with a launchd job that couldn't find `pixlet`).
 
 # Deliberately NOT using `set -e` here — a GitHub hiccup shouldn't prevent
 # the Tidbyt device from still getting updated with the values we just
 # scraped. Each risky step below checks its own exit status instead.
+
+PYTHON3="/usr/bin/python3"
+GIT="/usr/bin/git"
+PIXLET="/opt/homebrew/bin/pixlet"
 
 cd "/Users/eric/Tidbyt/StoryGraph"
 
 LOG_FILE="update.log"
 echo "---- $(date) ----" >> "$LOG_FILE"
 
-python3 scrape_storygraph.py hopebales stats.json >> "$LOG_FILE" 2>&1
+"$PYTHON3" scrape_storygraph.py hopebales stats.json >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then
     echo "ERROR: scrape failed, skipping this run entirely." >> "$LOG_FILE"
     exit 1
 fi
 
 # --- GitHub (historical record — failures here are logged but non-fatal) ---
-git add stats.json
-if git diff --staged --quiet; then
+"$GIT" add stats.json
+if "$GIT" diff --staged --quiet; then
     echo "No changes to stats.json, nothing to push to GitHub." >> "$LOG_FILE"
 else
-    if git commit -m "Update StoryGraph stats" >> "$LOG_FILE" 2>&1 && git push >> "$LOG_FILE" 2>&1; then
+    if "$GIT" commit -m "Update StoryGraph stats" >> "$LOG_FILE" 2>&1 && "$GIT" push >> "$LOG_FILE" 2>&1; then
         echo "Pushed updated stats.json to GitHub." >> "$LOG_FILE"
     else
         echo "WARNING: failed to commit/push stats.json to GitHub (continuing to Tidbyt push anyway)." >> "$LOG_FILE"
@@ -41,7 +47,7 @@ fi
 # --- Tidbyt device — always render + push fresh values, every run ---------
 source "$(dirname "$0")/.tidbyt_credentials.sh"
 
-STATS_ARGS=$(python3 -c "
+STATS_ARGS=$("$PYTHON3" -c "
 import json
 with open('stats.json') as f:
     d = json.load(f)
@@ -51,8 +57,8 @@ def val(k):
 print('pages_this_year=' + val('pages_this_year') + ' books_this_year=' + val('books_this_year') + ' total_pages_all_time=' + val('total_pages_all_time'))
 ")
 
-if /opt/homebrew/bin/pixlet render storygraph.star $STATS_ARGS -o storygraph.webp >> "$LOG_FILE" 2>&1; then
-    if /opt/homebrew/bin/pixlet push \
+if "$PIXLET" render storygraph.star $STATS_ARGS -o storygraph.webp >> "$LOG_FILE" 2>&1; then
+    if "$PIXLET" push \
         --installation-id StoryGraphStats \
         --api-token "$TIDBYT_API_TOKEN" \
         "$TIDBYT_DEVICE_ID" \
