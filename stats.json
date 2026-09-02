@@ -1,6 +1,6 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-09-01T08:19:36",
+  "generated_at": "2026-09-01T21:00:06",
   "year": 2026,
   "pages_this_year": 15695,
   "total_books_all_time": 282,
@@ -26,8 +26,11 @@
   },
   "books_this_year": 38,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": null,
-  "currently_reading_titles": [],
+  "currently_reading_count": 2,
+  "currently_reading_titles": [
+    "House of Sky and Breath (1 of 2) [Dramatized Adaptation]",
+    "Nettle & Bone"
+  ],
   "to_read_count": 39,
   "five_star_count": 7,
   "dnf_count": 13,
