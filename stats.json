@@ -1,38 +1,37 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-09-03T20:22:58",
+  "generated_at": "2026-09-03T21:00:07",
   "year": 2026,
-  "pages_this_year": 15695,
-  "total_books_all_time": 282,
-  "total_pages_all_time": 113116,
+  "pages_this_year": 15938,
+  "total_books_all_time": 283,
+  "total_pages_all_time": 113359,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
-  "average_rating": 4.38,
-  "review_count": 17,
+  "average_rating": 4.42,
+  "review_count": 18,
   "books_by_year": {
     "2022": 45,
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 38
+    "2026": 39
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 15695
+    "2026": 15938
   },
-  "books_this_year": 38,
+  "books_this_year": 39,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": 2,
+  "currently_reading_count": 1,
   "currently_reading_titles": [
-    "House of Sky and Breath (1 of 2) [Dramatized Adaptation]",
-    "Nettle & Bone"
+    "House of Sky and Breath (1 of 2) [Dramatized Adaptation]"
   ],
   "to_read_count": 39,
-  "five_star_count": 7,
+  "five_star_count": 8,
   "dnf_count": 13,
-  "reviews_count": 17
+  "reviews_count": 18
 }
