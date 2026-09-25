@@ -1,38 +1,37 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-09-24T03:00:06",
+  "generated_at": "2026-09-25T00:00:06",
   "year": 2026,
-  "pages_this_year": 17492,
-  "total_books_all_time": 287,
-  "total_pages_all_time": 114913,
+  "pages_this_year": 17874,
+  "total_books_all_time": 288,
+  "total_pages_all_time": 115295,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
-  "average_rating": 4.41,
-  "review_count": 20,
+  "average_rating": 4.39,
+  "review_count": 21,
   "books_by_year": {
     "2022": 45,
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 43
+    "2026": 44
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 17492
+    "2026": 17874
   },
-  "books_this_year": 43,
+  "books_this_year": 44,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": 2,
+  "currently_reading_count": 1,
   "currently_reading_titles": [
-    "Where Darkness Bloomed",
     "House of Flame and Shadow (1 of 2) [Dramatized Adaptation]"
   ],
   "to_read_count": 47,
   "five_star_count": 9,
   "dnf_count": 13,
-  "reviews_count": 20
+  "reviews_count": 21
 }
