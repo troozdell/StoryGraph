@@ -1,38 +1,37 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-09-28T15:00:10",
+  "generated_at": "2026-09-29T17:33:56",
   "year": 2026,
-  "pages_this_year": 18444,
-  "total_books_all_time": 290,
-  "total_pages_all_time": 115865,
+  "pages_this_year": 19110,
+  "total_books_all_time": 292,
+  "total_pages_all_time": 116531,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
-  "average_rating": 4.35,
-  "review_count": 23,
+  "average_rating": 4.29,
+  "review_count": 25,
   "books_by_year": {
     "2022": 45,
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 46
+    "2026": 48
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 18444
+    "2026": 19110
   },
-  "books_this_year": 46,
+  "books_this_year": 48,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": 2,
+  "currently_reading_count": 1,
   "currently_reading_titles": [
-    "Book of Night (B&N Exclusive Edition)",
     "House of Flame and Shadow (1 of 2) [Dramatized Adaptation]"
   ],
-  "to_read_count": 50,
+  "to_read_count": 49,
   "five_star_count": 9,
   "dnf_count": 13,
-  "reviews_count": 23
+  "reviews_count": 25
 }
