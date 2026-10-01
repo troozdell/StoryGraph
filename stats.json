@@ -1,37 +1,37 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-09-29T17:33:56",
+  "generated_at": "2026-09-30T21:00:10",
   "year": 2026,
-  "pages_this_year": 19110,
-  "total_books_all_time": 292,
-  "total_pages_all_time": 116531,
+  "pages_this_year": 19446,
+  "total_books_all_time": 293,
+  "total_pages_all_time": 116867,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
-  "average_rating": 4.29,
-  "review_count": 25,
+  "average_rating": 4.28,
+  "review_count": 26,
   "books_by_year": {
     "2022": 45,
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 48
+    "2026": 49
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 19110
+    "2026": 19446
   },
-  "books_this_year": 48,
-  "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
+  "books_this_year": 49,
+  "reading_personality": "Mainly reads fiction books that are dark, emotional, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
   "currently_reading_count": 1,
   "currently_reading_titles": [
     "House of Flame and Shadow (1 of 2) [Dramatized Adaptation]"
   ],
-  "to_read_count": 49,
+  "to_read_count": 48,
   "five_star_count": 9,
   "dnf_count": 13,
-  "reviews_count": 25
+  "reviews_count": 26
 }
