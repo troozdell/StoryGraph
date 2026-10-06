@@ -1,38 +1,37 @@
 {
   "username": "hopebales",
-  "generated_at": "2026-10-05T15:00:31",
+  "generated_at": "2026-10-06T15:00:10",
   "year": 2026,
-  "pages_this_year": 20298,
-  "total_books_all_time": 294,
-  "total_pages_all_time": 117719,
+  "pages_this_year": 20627,
+  "total_books_all_time": 295,
+  "total_pages_all_time": 118048,
   "current_streak_days": null,
   "longest_streak_days": null,
   "average_time_to_finish": "6 days",
-  "average_rating": 4.28,
-  "review_count": 26,
+  "average_rating": 4.31,
+  "review_count": 27,
   "books_by_year": {
     "2022": 45,
     "2023": 59,
     "2024": 66,
     "2025": 67,
-    "2026": 50
+    "2026": 51
   },
   "pages_by_year": {
     "2022": 20740,
     "2023": 25248,
     "2024": 23159,
     "2025": 25594,
-    "2026": 20298
+    "2026": 20627
   },
-  "books_this_year": 50,
+  "books_this_year": 51,
   "reading_personality": "Mainly reads fiction books that are emotional, dark, and adventurous. Typically chooses medium-paced books that are 300-499 pages long.",
-  "currently_reading_count": 2,
+  "currently_reading_count": 1,
   "currently_reading_titles": [
-    "House of Flame and Shadow (2 of 2) [Dramatized Adaptation]",
-    "Weyward"
+    "House of Flame and Shadow (2 of 2) [Dramatized Adaptation]"
   ],
   "to_read_count": 47,
-  "five_star_count": 9,
+  "five_star_count": 10,
   "dnf_count": 13,
-  "reviews_count": 26
+  "reviews_count": 27
 }
